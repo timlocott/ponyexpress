@@ -1,10 +1,11 @@
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
 from backend import database as db
 
 from backend.entities import (
     UserCollection,
-    # UserCreate,
-    # UserInDB,
+    UserCreate,
+    UserInDB,
 )
 
 
@@ -20,14 +21,12 @@ def get_users():
         users=sorted(users, key=sort_key)
     )
 
-@user_router.post("/users",
-          description="Creates a new user",
-          name="Create user")
-def create_user():
-    pass
+@user_router.post("", response_model=UserInDB)
+def create_user(user_create: UserCreate):
+    """Create a user"""
+    return db.create_user(user_create)
 
-@user_router.get("/users/{user_id}",
-         description="Returns a user for a given id",
-         name="Get User")
-def get_user():
-    pass
+@user_router.get("/{user_id}", response_model=UserInDB)
+def get_user(user_id: str):
+    """Gets a specific user with the corresponding ID"""
+    return db.get_user_by_id(user_id)
