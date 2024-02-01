@@ -21,7 +21,7 @@ class MessageCollection(BaseModel):
     messages: list[Message]
 
 # ----------------------------- users ----------------------------- #
-
+    
 class User(BaseModel):
     """Represents an API response for a user."""
     id: str
@@ -36,10 +36,13 @@ class UserCreate(BaseModel):
     """Represents parameters for adding a new user to the system."""
     id: str
 
+class UserResponse(BaseModel):
+    user: UserInDB
+
 class UserCollection(BaseModel):
     """Represents an API response for a collection of users."""
     meta: Metadata
-    users: list[UserInDB]
+    users: list[UserResponse]
 
 # ----------------------------- chats ----------------------------- #
     
@@ -81,3 +84,6 @@ class ChatCollection(BaseModel):
     """Represents an API response for a collection of users."""
     meta: Metadata
     chats: list[ChatNM]
+
+class ChatResponse(BaseModel):
+    user: ChatNM

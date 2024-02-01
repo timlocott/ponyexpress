@@ -5,6 +5,7 @@ from backend.entities import (
     ChatCollection,
     ChatInDB,
     ChatNM,
+    ChatResponse,
     ChatUpdate,
     MessageCollection,
     UserCollection,
@@ -22,7 +23,7 @@ def get_chats():
         chats=sorted(chats, key=sort_key)
     )
 
-@chat_router.get("/{chat_id}", response_model=ChatNM)
+@chat_router.get("/{chat_id}", response_model=ChatResponse)
 def get_chat(chat_id: str):
     """Gets a specific chat with the corresponding ID"""
     return db.get_chat_by_id(chat_id)
@@ -52,7 +53,7 @@ def delete_chat(chat_id: str):
     """Delete a chat"""
     db.delete_chat(chat_id)
 
-@chat_router.put("/{chat_id}", response_model=ChatNM)
+@chat_router.put("/{chat_id}", response_model=ChatResponse)
 def update_chat(chat_id: str, chat_update: ChatUpdate):
     """Update a chat"""
     return db.update_chat_by_id(chat_id, chat_update)

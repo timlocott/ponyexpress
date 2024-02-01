@@ -3,11 +3,13 @@ from datetime import date
 
 from backend.entities import(
     ChatNM,
+    UserResponse,
     UserInDB,
     UserCreate,
     ChatInDB,
     ChatUpdate,
     Message,
+    ChatResponse,
 )
 
 with open("backend/fake_db.json","r") as f:
@@ -49,6 +51,17 @@ def get_user_by_id(u_id: str) -> UserInDB:
     if u_id in DB["users"]:
         return UserInDB(**DB["users"][u_id])
     raise EntityNotFoundException(entity_name="User", entity_id=u_id,)
+
+# def get_chats_by_user_id(u_id: str) -> list[str]:
+#     result : list[str] = []
+#     chats = [ChatNM(**chat_data) for chat_data in DB["chats"]]
+#     for chat in chats:
+#         for key, val in chat:
+#             if key == "user_ids":
+#                 if val.values().contains(u_id):
+#                     result.append(chat.id)
+
+#     return result
 
 # ----------------------------- chats ----------------------------- #
 
