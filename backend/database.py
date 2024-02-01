@@ -90,7 +90,7 @@ def get_messages_by_chat_id(c_id: str) -> list[Message]:
     :return: list of messages
     :raises: EntityNotFoundException: If chat id does not exist
     """
-    chat: ChatInDB = get_chat_by_id(c_id)
+    chat: ChatInDB = get_chat_by_id(c_id).chat
     return [Message(**message_data) for message_data in DB["chats"][chat.id]["messages"]]
 
 def get_users_by_chat_id(c_id: str) -> list[UserInDB]:
@@ -100,8 +100,8 @@ def get_users_by_chat_id(c_id: str) -> list[UserInDB]:
     :return: list of users
     :raises: EntityNotFoundException: If chat id does not exist
     """
-    chat: ChatInDB = get_chat_by_id(c_id)
-    users = [get_user_by_id(user_data) for user_data in DB["chats"][chat.id]["user_ids"]]
+    chat: ChatInDB = get_chat_by_id(c_id).chat
+    users = [get_user_by_id(user_data).user for user_data in DB["chats"][chat.id]["user_ids"]]
     return users
 
 def delete_chat(c_id: str) -> None:
@@ -110,7 +110,7 @@ def delete_chat(c_id: str) -> None:
     :param c_id: id of the chat
     :raises: EntityNotFoundException: If chat id does not exist
     """
-    chat = get_chat_by_id(c_id)
+    chat = get_chat_by_id(c_id).chat
     del DB["chats"][chat.id]
 
 def update_chat_by_id(c_id: str, chat_update: ChatUpdate) -> ChatResponse:

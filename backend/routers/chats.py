@@ -41,7 +41,7 @@ def get_messages(chat_id: str):
 @chat_router.get("/{chat_id}/users", response_model=UserCollection)
 def get_users(chat_id: str):
     """Get a collection of users for a specified chat."""
-    users = db.get_users_by_chat_id(chat_id) 
+    users = db.get_users_by_chat_id(chat_id)
     sort_key = lambda user: getattr(user, "id")
     return UserCollection(
         meta={"count": len(users)},
