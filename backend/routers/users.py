@@ -31,12 +31,12 @@ def get_user(user_id: str):
     """Gets a specific user with the corresponding ID"""
     return db.get_user_by_id(user_id)
 
-# @user_router.get("/{user_id}/chats", response_model=ChatCollection)
-# def get_chats(user_id: str):
-#     """Gets collection of chats related to user"""
-#     chats = db.get_chats_by_user_id(user_id)
-#     sort_key = lambda chat: getattr(chat, "name")
-#     return ChatCollection(
-#         meta={"count": len(chats)},
-#         chats=sorted(chats, key=sort_key)
-#     )
+@user_router.get("/{user_id}/chats", response_model=ChatCollection)
+def get_chats(user_id: str):
+    """Gets collection of chats related to user"""
+    chats = db.get_chats_by_user_id(user_id)
+    sort_key = lambda chat: getattr(chat, "name")
+    return ChatCollection(
+        meta={"count": len(chats)},
+        chats=sorted(chats, key=sort_key)
+    )

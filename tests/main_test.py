@@ -204,6 +204,30 @@ def test_update_chat_invalid_id():
         }
     }
 
+def test_get_chats_by_valid_user_id():
+    id = "bishop"
+    test_client = TestClient(app)
+    response = test_client.get(f"/users/{id}/chats")
+    assert response.status_code == 200
+
+    meta = response.json()["meta"]
+    chats = response.json()["chats"]
+    assert meta["count"] == len(chats)
+    assert chats == sorted(chats, key=lambda message: message["name"])
+
+def test_get_chats_by_inalid_user_id():
+    id = "bad_id"
+    test_client = TestClient(app)
+    response = test_client.get(f"/users/{id}/chats")
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": {
+            "type": "entity_not_found",
+            "entity_name": "User",
+            "entity_id": id,
+        }
+    }
 
 
 
