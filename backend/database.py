@@ -1,5 +1,5 @@
 import json
-from datetime import date
+from datetime import datetime
 
 from backend.entities import(
     ChatNM,
@@ -32,7 +32,7 @@ def create_user(user_create: UserCreate) -> UserResponse:
     :raises: DuplicateChatException: If chat id is already exists
     """
     user = UserInDB(
-        created_at=date.today(),
+        created_at=datetime.now(), 
         **user_create.model_dump(),
     )
 
