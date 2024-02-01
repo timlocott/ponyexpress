@@ -1,5 +1,4 @@
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter
 from backend import database as db
 
 from backend.entities import (
@@ -7,7 +6,6 @@ from backend.entities import (
     UserCreate,
     UserInDB,
 )
-
 
 user_router = APIRouter(prefix="/users", tags=["Users"])
 

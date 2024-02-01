@@ -2,14 +2,18 @@ import json
 from datetime import date
 
 from backend.entities import(
+    ChatNM,
     UserInDB,
     UserCreate,
+    ChatInDB,
+    ChatUpdate,
+    Message,
 )
 
 with open("backend/fake_db.json","r") as f:
     DB = json.load(f)
 
-# users
+#   ----------------------------- users ----------------------------- #
     
 def get_all_users() -> list[UserInDB]:
     """ 
@@ -23,6 +27,7 @@ def create_user(user_create: UserCreate) -> UserInDB:
     Create new user in database
     :param user_create: attribute values for the new user
     :return: the new user
+    :raises: DuplicateChatException: If chat id is already exists
     """
     user = UserInDB(
         created_at=date.today(),
@@ -44,6 +49,73 @@ def get_user_by_id(u_id: str) -> UserInDB:
     if u_id in DB["users"]:
         return UserInDB(**DB["users"][u_id])
     raise EntityNotFoundException(entity_name="User", entity_id=u_id,)
+
+# ----------------------------- chats ----------------------------- #
+
+def get_all_chats() -> list[ChatNM]:
+    """
+    Get all chats from the database
+    :return: list of chats
+    """
+    return [ChatNM(**chat_data) for chat_data in DB["chats"].values()]
+
+def get_chat_by_id(c_id: str) -> ChatNM: 
+    """
+    Get chat from database
+    :param c_id: id of the chat
+    :return: the chat
+    :raises: EntityNotFoundException: If chat id does not exist
+    """
+    if c_id in DB["chats"]:
+        return ChatNM(**DB["chats"][c_id])
+    raise EntityNotFoundException(entity_name="Chat", entity_id=c_id,)
+
+def get_messages_by_chat_id(c_id: str) -> list[Message]:
+    """
+    Get all messages for a specified chat
+    :param c_id: id of the chat
+    :return: list of messages
+    :raises: EntityNotFoundException: If chat id does not exist
+    """
+    chat: ChatInDB = get_chat_by_id(c_id)
+    return [Message(**message_data) for message_data in DB["chats"][chat.id]["messages"]]
+
+def get_users_by_chat_id(c_id: str) -> list[UserInDB]:
+    """
+    Get all users for a specified chat
+    :param c_id: id of the chat
+    :return: list of users
+    :raises: EntityNotFoundException: If chat id does not exist
+    """
+    chat: ChatInDB = get_chat_by_id(c_id)
+    users = [get_user_by_id(user_data) for user_data in DB["chats"][chat.id]["user_ids"]]
+    return users
+
+def delete_chat(c_id: str) -> None:
+    """
+    Delete chat from database
+    :param c_id: id of the chat
+    :raises: EntityNotFoundException: If chat id does not exist
+    """
+    chat = get_chat_by_id(c_id)
+    del DB["chats"][chat.id]
+
+def update_chat_by_id(c_id: str, chat_update: ChatUpdate) -> ChatNM:
+    """
+    Update chat
+    :param c_id: id of chat
+    :raises: EntityNotFoundException: If chat id does not exist
+    """
+    chat = get_chat_by_id(c_id)
+    
+    for attr, value in chat_update.model_dump(exclude_none=True).items():
+        setattr(chat, attr, value)
+
+    DB["chats"][chat.id] = chat.model_dump()
+
+    return chat
+
+# ----------------------------- exception classes ----------------------------- #
 
 class EntityNotFoundException(Exception):
     def __init__ (self, *, entity_id: str, entity_name: str):

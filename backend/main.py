@@ -1,7 +1,8 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from backend.routers.users import user_router as user_router
+from backend.routers.users import user_router
+from backend.routers.chats import chat_router
 from backend.database import EntityNotFoundException, DuplicateEntityException
 
 app = FastAPI(
@@ -11,6 +12,7 @@ app = FastAPI(
 )
 
 app.include_router(user_router)
+app.include_router(chat_router)
 
 @app.exception_handler(EntityNotFoundException)
 def handle_entity_not_found(
