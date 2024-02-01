@@ -20,11 +20,12 @@ def test_create_user():
         "/users",
         json={"id":"test1"})
     assert response.status_code == 200
-    assert response.json()["id"] == "test1"
+    assert response.json()["user"]["id"] == "test1"
 
-    response = test_client.get(f"/users/{response.json()['id']}")
+    response = test_client.get(f"/users/{response.json()['user']['id']}")
+    response = test_client.get(f"/users/test1")
     assert response.status_code == 200
-    assert response.json()["id"] == "test1"
+    assert response.json()["user"]["id"] == "test1"
 
 def test_create_user_with_dup_id():
     id = "bishop"
@@ -59,7 +60,7 @@ def test_get_user_by_id():
     test_client = TestClient(app)
     response = test_client.get(f"/users/{id}")
     assert response.status_code == 200
-    assert response.json()["id"] == "bishop"
+    assert response.json()["user"]["id"] == "bishop"
 
 # ----------------------------- chats ----------------------------- #
     
@@ -91,7 +92,7 @@ def test_get_chat_by_id():
     test_client = TestClient(app)
     response = test_client.get(f"/chats/{id}")
     assert response.status_code == 200
-    assert response.json()["name"] == "nostromo"
+    assert response.json()["chat"]["name"] == "nostromo"
 
 def test_get_messages_by_vaild_id():
     id = "734eeb9ddaec43b2ab6e289a0d472376"
@@ -177,13 +178,13 @@ def test_update_chat_valid_id():
     response = test_client.put(f"/chats/{id}", json=update_params)
 
     assert response.status_code == 200
-    chat = response.json()
+    chat = response.json()["chat"]
     for key, value in update_params.items():
         assert chat[key] == value
 
     response = test_client.get(f"/chats/{id}")
     assert response.status_code == 200
-    chat = response.json()
+    chat = response.json()["chat"]
     # assert chat.name == update_params["name"]
     for key, value in update_params.items():
         assert chat[key] == value

@@ -42,7 +42,7 @@ class UserResponse(BaseModel):
 class UserCollection(BaseModel):
     """Represents an API response for a collection of users."""
     meta: Metadata
-    users: list[UserResponse]
+    users: list[UserInDB]
 
 # ----------------------------- chats ----------------------------- #
     
@@ -86,4 +86,4 @@ class ChatCollection(BaseModel):
     chats: list[ChatNM]
 
 class ChatResponse(BaseModel):
-    user: ChatNM
+    chat: ChatNM
