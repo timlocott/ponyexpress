@@ -1,0 +1,129 @@
+.title{
+    display: flex;
+    align-items: center;
+    max-width: min-content;
+    margin-right: 32px;
+}
+
+.chats-page {
+    display: flex;
+    flex-direction: row;
+}
+
+.chat-list-container {
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    flex-grow: 1;
+    flex-shrink: 0;
+}
+
+.chat-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-list-item {
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid rgb(33,
+        151,
+        106);
+    border-radius: 5px;
+}
+
+.chat-list-item:hover {
+    background-color: rgb(101,
+        82,
+        77);
+}
+
+.chat-list-item-name{
+    font-weight: bolder;
+    font-size: larger;
+    color: rgb(240, 101, 67);
+}
+
+.chat-list-item-userIds{
+    margin: 0 10px;
+    display: flex;
+    font-size: small;
+    flex-direction: row;
+    color: rgb(80, 162, 167);
+}
+
+.chat-list-item-datetime{
+    margin: 0 10px;
+    font-weight: lighter;
+    font-size: x-small;
+    color: rgb(225, 216, 159);
+}
+
+.chat-card-container {
+    display: flex;
+    flex-direction: column;
+    max-height: 69vh;
+    border-radius: 5px;
+    border: 1px solid rgb(66,
+        129,
+        164);
+    overflow-y: scroll;
+    flex-direction: column-reverse;
+}
+
+/* ------------------------------------ Messages ------------------------------------ */
+
+.message-list {
+    margin: 10px 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.message-list-item {
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid rgb(33,
+            151,
+            106);
+    border-radius: 5px;
+}
+
+.message-list-item:hover {
+    background-color: rgb(101,
+            82,
+            77);
+}
+
+.message-list-item-userid {
+    font-weight: bold;
+    font-size: small;
+    color: rgb(80, 162, 167);
+}
+
+.message-list-item-datetime {
+    font-size: x-small;
+    font-weight: lighter;
+    color: rgb(225, 216, 159);
+}
+
+.message-list-item-text {
+    margin: 0 10px;
+    font-weight: lighter;
+    font-size: medium;
+    color: rgb(243,
+        132,
+        104);
+}
+
+.message-detail {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+/* ------------------------------------ Other ------------------------------------ */
+
+.container-margin-sides{
+    margin: 0 20px;
+    flex-grow: 2;
+}
