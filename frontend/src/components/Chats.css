@@ -38,6 +38,12 @@
         77);
 }
 
+.chat-list-item-selected {
+    background-color: rgb(101,
+                82,
+                77);
+}
+
 .chat-list-item-name{
     font-weight: bolder;
     font-size: larger;
@@ -88,15 +94,10 @@
     border-radius: 5px;
 }
 
-.message-list-item:hover {
-    background-color: rgb(101,
-            82,
-            77);
-}
-
 .message-list-item-userid {
     font-weight: bold;
     font-size: small;
+    margin-right: 10px;
     color: rgb(80, 162, 167);
 }
 

@@ -90,7 +90,7 @@ function ChatCardQueryContainer({ chatId }){
     if (!chatId) {
         return (
             <div className="container-margin-sides">
-                <h2> Messages </h2>
+                <h2>&nbsp;</h2>
                 <h3>Select a chat</h3>
             </div>
         );
