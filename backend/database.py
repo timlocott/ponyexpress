@@ -1,70 +1,88 @@
-import json
-from datetime import datetime
+# import json
+from sqlmodel import Session, SQLModel, create_engine, select
+# from datetime import datetime
 
 from backend.entities import(
     ChatNM,
     UserResponse,
-    UserInDB,
     UserCreate,
-    ChatInDB,
     ChatUpdate,
     Message,
     ChatResponse,
 )
+from backend.schema import(
+    UserChatLinkInDB,
+    UserInDB,
+    ChatInDB,
+    MessageInDB,
+)
 
-with open("backend/fake_db.json","r") as f:
-    DB = json.load(f)
+engine = create_engine(
+    "sqlite:///backend/pony_express.db",
+    echo=True,
+    connect_args={"check_same_thread": False},
+)
+
+def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)
+
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+
+# with open("backend/fake_db.json","r") as f:
+#     DB = json.load(f)
 
 #   ----------------------------- users ----------------------------- #
     
-def get_all_users() -> list[UserInDB]:
+def get_all_users(session: Session) -> list[UserInDB]:
     """ 
     Get all users from the database 
     :return: list of users
     """
-    return [UserInDB(**user_data) for user_data in DB["users"].values()]
+    return session.exec(select(UserInDB)).all()
 
-def create_user(user_create: UserCreate) -> UserResponse:
+def create_user(session: Session, user_create: UserCreate) -> UserResponse:
     """
     Create new user in database
     :param user_create: attribute values for the new user
     :return: the new user
     :raises: DuplicateChatException: If chat id is already exists
     """
-    user = UserInDB(
-        created_at=datetime.now(), 
-        **user_create.model_dump(),
-    )
 
-    if user.id in DB["users"]:
+    user = UserInDB(**user_create.model_dump())
+    if user.id in get_all_users(session):
         raise DuplicateEntityException(entity_name="User", entity_id=user.id)
-    DB["users"][user.id] = user.model_dump()
-    return UserResponse(user=user)
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return user
 
-def get_user_by_id(u_id: str) -> UserResponse: 
+def get_user_by_id(session: Session, u_id: int) -> UserResponse: 
     """
     Get user from database
     :param u_id: id of the user
     :return: the user
     :raises: EntityNotFoundException: If user id does not exist
     """
-    if u_id in DB["users"]:
-        return UserResponse(user=UserInDB(**DB["users"][u_id]))
+    user = session.get(UserInDB, u_id)
+    if user:
+        return user
     raise EntityNotFoundException(entity_name="User", entity_id=u_id,)
 
-def get_chats_by_user_id(u_id: str) -> list[ChatNM]:
+def get_chats_by_user_id(session: Session, u_id: int) -> list[ChatNM]:
     """
     Get chats related to user id
     :param u_id: id of the user
     :return: list of chats
     :raises: EntityNotFoundException: If user id does not exist
     """
-    user = get_user_by_id(u_id)
+    user = get_user_by_id(session, u_id)
     result : list[ChatNM] = []
-    chats = get_all_chats()
+    chats = get_all_chats(session)
     for chat in chats:
         for id in chat.user_ids:
-            print("u_ids:" + id)
             if id == u_id:
                 result.append(chat)
 
@@ -72,25 +90,26 @@ def get_chats_by_user_id(u_id: str) -> list[ChatNM]:
 
 # ----------------------------- chats ----------------------------- #
 
-def get_all_chats() -> list[ChatNM]:
+def get_all_chats(session: Session) -> list[ChatNM]:
     """
     Get all chats from the database
     :return: list of chats
     """
-    return [ChatNM(**chat_data) for chat_data in DB["chats"].values()]
+    return session.exec(select(ChatInDB)).all()
 
-def get_chat_by_id(c_id: str) -> ChatResponse: 
+def get_chat_by_id(session: Session, c_id: int) -> ChatResponse: 
     """
     Get chat from database
     :param c_id: id of the chat
     :return: the chat
     :raises: EntityNotFoundException: If chat id does not exist
     """
-    if c_id in DB["chats"]:
-        return ChatResponse(chat=ChatNM(**DB["chats"][c_id]))
+    chat = session.get(ChatInDB, c_id)
+    if chat:
+        return chat
     raise EntityNotFoundException(entity_name="Chat", entity_id=c_id,)
 
-def get_messages_by_chat_id(c_id: str) -> list[Message]:
+def get_messages_by_chat_id(session: Session, c_id: int) -> list[Message]:
     """
     Get all messages for a specified chat
     :param c_id: id of the chat
@@ -98,9 +117,9 @@ def get_messages_by_chat_id(c_id: str) -> list[Message]:
     :raises: EntityNotFoundException: If chat id does not exist
     """
     chat: ChatInDB = get_chat_by_id(c_id).chat
-    return [Message(**message_data) for message_data in DB["chats"][chat.id]["messages"]]
+    return session.get(MessageInDB, chat.id)
 
-def get_users_by_chat_id(c_id: str) -> list[UserInDB]:
+def get_users_by_chat_id(session: Session, c_id: int) -> list[UserInDB]:
     """
     Get all users for a specified chat
     :param c_id: id of the chat
@@ -111,16 +130,17 @@ def get_users_by_chat_id(c_id: str) -> list[UserInDB]:
     users = [get_user_by_id(user_data).user for user_data in DB["chats"][chat.id]["user_ids"]]
     return users
 
-def delete_chat(c_id: str) -> None:
+def delete_chat(session: Session, c_id: int) -> None:
     """
     Delete chat from database
     :param c_id: id of the chat
     :raises: EntityNotFoundException: If chat id does not exist
     """
     chat = get_chat_by_id(c_id).chat
-    del DB["chats"][chat.id]
+    session.delete(chat)
+    session.commit()
 
-def update_chat_by_id(c_id: str, chat_update: ChatUpdate) -> ChatResponse:
+def update_chat_by_id(session: Session, c_id: int, chat_update: ChatUpdate) -> ChatResponse:
     """
     Update chat
     :param c_id: id of chat
@@ -128,21 +148,23 @@ def update_chat_by_id(c_id: str, chat_update: ChatUpdate) -> ChatResponse:
     """
     chat = get_chat_by_id(c_id).chat
     
-    for attr, value in chat_update.model_dump(exclude_none=True).items():
+    for attr, value in chat_update.model_dump(exclude_unset=True).items():
         setattr(chat, attr, value)
 
-    DB["chats"][chat.id] = chat.model_dump()
+    session.add(chat)
+    session.commit()
+    session.refresh(chat)
 
     return ChatResponse(chat=chat)
 
 # ----------------------------- exception classes ----------------------------- #
 
 class EntityNotFoundException(Exception):
-    def __init__ (self, *, entity_id: str, entity_name: str):
+    def __init__ (self, *, entity_id: int, entity_name: str):
         self.entity_name = entity_name
         self.entity_id = entity_id
 
 class DuplicateEntityException(Exception):
-    def __init__ (self, *, entity_id: str, entity_name: str):
+    def __init__ (self, *, entity_id: int, entity_name: str):
         self.entity_name = entity_name
         self.entity_id = entity_id
