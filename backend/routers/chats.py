@@ -20,7 +20,7 @@ chat_router = APIRouter(prefix="/chats", tags=["Chats"])
 @chat_router.get("", response_model=ChatCollection)
 def get_chats(session: Session = Depends(db.get_session)):
     """Get a collection of chats."""
-    chats = db.get_all_chats()
+    chats = db.get_all_chats(session)
     sort_key = lambda chat: getattr(chat, "name")
     return ChatCollection(
         meta={"count": len(chats)},

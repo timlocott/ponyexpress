@@ -31,7 +31,6 @@ class User(SQLModel):
     email: str
     hashed_password: str
     created_at: datetime
-
 # class UserInDB(BaseModel):
 #     """Represents a user in the database."""
 #     id: str

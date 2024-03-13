@@ -68,7 +68,7 @@ def get_user_by_id(session: Session, u_id: int) -> UserResponse:
     """
     user = session.get(UserInDB, u_id)
     if user:
-        return user
+        return UserResponse(user=user)
     raise EntityNotFoundException(entity_name="User", entity_id=u_id,)
 
 def get_chats_by_user_id(session: Session, u_id: int) -> list[ChatNM]:
@@ -90,7 +90,7 @@ def get_chats_by_user_id(session: Session, u_id: int) -> list[ChatNM]:
 
 # ----------------------------- chats ----------------------------- #
 
-def get_all_chats(session: Session) -> list[ChatNM]:
+def get_all_chats(session: Session) -> list[ChatInDB]:
     """
     Get all chats from the database
     :return: list of chats
@@ -106,7 +106,7 @@ def get_chat_by_id(session: Session, c_id: int) -> ChatResponse:
     """
     chat = session.get(ChatInDB, c_id)
     if chat:
-        return chat
+        return ChatResponse(chat=chat)
     raise EntityNotFoundException(entity_name="Chat", entity_id=c_id,)
 
 def get_messages_by_chat_id(session: Session, c_id: int) -> list[Message]:
