@@ -13,8 +13,8 @@ class Message(SQLModel):
     """Data model for message."""
     id: int
     text: str
-    user_id: int
     chat_id: int
+    user: "User"
     created_at: datetime
 
 class MessageCollection(BaseModel):
@@ -29,7 +29,6 @@ class User(SQLModel):
     id: int
     username: str
     email: str
-    hashed_password: str
     created_at: datetime
 # class UserInDB(BaseModel):
 #     """Represents a user in the database."""
@@ -38,7 +37,6 @@ class User(SQLModel):
 
 class UserCreate(SQLModel):
     """Represents model for adding a new user to the system."""
-    id: int
     username: str
     email: str
     hashed_password: str
@@ -58,17 +56,17 @@ class Chat(SQLModel):
     """Data model for a chat."""
     id: int
     name: str
-    owner_id: int
+    owner: User
     created_at: datetime
-    user_ids: list[int]
+    # user_ids: list[int]
     messages: list[Message]
 
 class ChatNM(SQLModel):
     """Represents an API response for a chat without messages"""
     id: int
     name: str
-    owner_id: int
-    user_ids: list[int]
+    owner: User
+    # user_ids: list[int]
     created_at: datetime
 
 # class ChatInDB(BaseModel):
@@ -83,8 +81,8 @@ class ChatNM(SQLModel):
 class ChatUpdate(SQLModel):
     id: int = None
     name: str = None
-    owner_id: int = None
-    user_ids: list[int] = None
+    owner: User = None
+    # user_ids: list[int] = None
     messages: list[Message] = None
     created_at: datetime = None
 

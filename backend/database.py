@@ -57,7 +57,7 @@ def create_user(session: Session, user_create: UserCreate) -> UserResponse:
     session.add(user)
     session.commit()
     session.refresh(user)
-    return user
+    return UserResponse(user=user)
 
 def get_user_by_id(session: Session, u_id: int) -> UserResponse: 
     """
@@ -79,14 +79,14 @@ def get_chats_by_user_id(session: Session, u_id: int) -> list[ChatNM]:
     :raises: EntityNotFoundException: If user id does not exist
     """
     user = get_user_by_id(session, u_id)
-    result : list[ChatNM] = []
-    chats = get_all_chats(session)
-    for chat in chats:
-        for id in chat.user_ids:
-            if id == u_id:
-                result.append(chat)
+    # result : list[ChatNM] = []
 
-    return result
+    user = session.get(UserInDB, u_id)
+    # for chat in user.chats:
+    #     result.append(chat)
+
+    # return result
+    return user.chats
 
 # ----------------------------- chats ----------------------------- #
 
@@ -116,8 +116,8 @@ def get_messages_by_chat_id(session: Session, c_id: int) -> list[Message]:
     :return: list of messages
     :raises: EntityNotFoundException: If chat id does not exist
     """
-    chat: ChatInDB = get_chat_by_id(c_id).chat
-    return session.get(MessageInDB, chat.id)
+    chat: ChatInDB = get_chat_by_id(session, c_id).chat
+    return session.get(ChatInDB, c_id).messages
 
 def get_users_by_chat_id(session: Session, c_id: int) -> list[UserInDB]:
     """
@@ -126,9 +126,8 @@ def get_users_by_chat_id(session: Session, c_id: int) -> list[UserInDB]:
     :return: list of users
     :raises: EntityNotFoundException: If chat id does not exist
     """
-    chat: ChatInDB = get_chat_by_id(c_id).chat
-    users = [get_user_by_id(user_data).user for user_data in DB["chats"][chat.id]["user_ids"]]
-    return users
+    chat: ChatInDB = get_chat_by_id(session, c_id).chat
+    return session.get(ChatInDB, c_id).users
 
 def delete_chat(session: Session, c_id: int) -> None:
     """
@@ -136,7 +135,7 @@ def delete_chat(session: Session, c_id: int) -> None:
     :param c_id: id of the chat
     :raises: EntityNotFoundException: If chat id does not exist
     """
-    chat = get_chat_by_id(c_id).chat
+    chat = get_chat_by_id(session, c_id).chat
     session.delete(chat)
     session.commit()
 
@@ -146,7 +145,7 @@ def update_chat_by_id(session: Session, c_id: int, chat_update: ChatUpdate) -> C
     :param c_id: id of chat
     :raises: EntityNotFoundException: If chat id does not exist
     """
-    chat = get_chat_by_id(c_id).chat
+    chat = get_chat_by_id(session, c_id).chat
     
     for attr, value in chat_update.model_dump(exclude_unset=True).items():
         setattr(chat, attr, value)

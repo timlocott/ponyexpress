@@ -26,10 +26,10 @@ def get_users(session: Session = Depends(db.get_session)):
         users=sorted(users, key=sort_key)
     )
 
-@user_router.post("", response_model=UserResponse)
-def create_user(user_create: UserCreate, session: Session = Depends(db.get_session)):
-    """Create a user"""
-    return db.create_user(session, user_create)
+# @user_router.post("", response_model=UserResponse)
+# def create_user(user_create: UserCreate, session: Session = Depends(db.get_session)):
+#     """Create a user"""
+#     return db.create_user(session, user_create)
 
 @user_router.get("/{user_id}", response_model=UserResponse)
 def get_user(user_id: str, session: Session = Depends(db.get_session)):

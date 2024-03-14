@@ -1,5 +1,4 @@
 from fastapi.testclient import TestClient
-
 from backend.main import app
 
 # ----------------------------- users ----------------------------- #
@@ -43,7 +42,7 @@ def test_create_user_with_dup_id():
     }
 
 def test_get_user_by_invalid_id():
-    id = "badID"
+    id = 900
     test_client = TestClient(app)
     response = test_client.get(f"/users/{id}")
     assert response.status_code == 404
@@ -56,11 +55,11 @@ def test_get_user_by_invalid_id():
     }
 
 def test_get_user_by_id():
-    id = "bishop"
+    id = 1
     test_client = TestClient(app)
     response = test_client.get(f"/users/{id}")
     assert response.status_code == 200
-    assert response.json()["user"]["id"] == "bishop"
+    assert response.json()["user"]["id"] == 1
 
 # ----------------------------- chats ----------------------------- #
     
@@ -75,7 +74,7 @@ def test_get_chats():
     assert chats == sorted(chats, key=lambda user: user["name"])
 
 def test_get_chat_by_invalid_id():
-    id = "badID"
+    id = 900
     test_client = TestClient(app)
     response = test_client.get(f"/chats/{id}")
     assert response.status_code == 404
@@ -88,14 +87,14 @@ def test_get_chat_by_invalid_id():
     }
 
 def test_get_chat_by_id():
-    id = "734eeb9ddaec43b2ab6e289a0d472376"
+    id = 3
     test_client = TestClient(app)
     response = test_client.get(f"/chats/{id}")
     assert response.status_code == 200
     assert response.json()["chat"]["name"] == "nostromo"
 
 def test_get_messages_by_vaild_id():
-    id = "734eeb9ddaec43b2ab6e289a0d472376"
+    id = 3
     test_client = TestClient(app)
     response = test_client.get(f"/chats/{id}/messages")
     assert response.status_code == 200
@@ -106,7 +105,7 @@ def test_get_messages_by_vaild_id():
     assert messages == sorted(messages, key=lambda message: message["created_at"])
 
 def test_get_messages_by_invalid_id():
-    id = "badID"
+    id = 900
     test_client = TestClient(app)
     response = test_client.get(f"/chats/{id}/messages")
     assert response.status_code == 404
@@ -119,7 +118,7 @@ def test_get_messages_by_invalid_id():
     }
 
 def test_get_users_by_vaild_id():
-    id = "734eeb9ddaec43b2ab6e289a0d472376"
+    id = 3
     test_client = TestClient(app)
     response = test_client.get(f"/chats/{id}/users")
     assert response.status_code == 200
@@ -130,7 +129,7 @@ def test_get_users_by_vaild_id():
     assert users == sorted(users, key=lambda message: message["id"])
 
 def test_get_users_by_invalid_id():
-    id = "badID"
+    id = 900
     test_client = TestClient(app)
     response = test_client.get(f"/chats/{id}/users")
     assert response.status_code == 404
@@ -143,7 +142,7 @@ def test_get_users_by_invalid_id():
     }
 
 def test_delete_chat_valid_id():
-    id = "36b18c30f5eb4c7888229474d12e426f"
+    id = 3
     test_client = TestClient(app)
     response = test_client.delete(f"/chats/{id}")
     assert response.status_code == 204
@@ -159,7 +158,7 @@ def test_delete_chat_valid_id():
     }
 
 def test_delete_chat_invalid_id():
-    id = "badID"
+    id = 900
     test_client = TestClient(app)
     response = test_client.delete(f"/chats/{id}")
     assert response.status_code == 404
@@ -172,7 +171,7 @@ def test_delete_chat_invalid_id():
     }
 
 def test_update_chat_valid_id():
-    id = "734eeb9ddaec43b2ab6e289a0d472376"
+    id = 3
     update_params = { "name": "test test test"}
     test_client = TestClient(app)
     response = test_client.put(f"/chats/{id}", json=update_params)
@@ -190,7 +189,7 @@ def test_update_chat_valid_id():
         assert chat[key] == value
 
 def test_update_chat_invalid_id():
-    id = "bad_id"
+    id = 900
     update_params = { "name": "test test test"}
     test_client = TestClient(app)
     response = test_client.put(f"/chats/{id}", json=update_params)
@@ -205,7 +204,7 @@ def test_update_chat_invalid_id():
     }
 
 def test_get_chats_by_valid_user_id():
-    id = "bishop"
+    id = 1
     test_client = TestClient(app)
     response = test_client.get(f"/users/{id}/chats")
     assert response.status_code == 200
@@ -216,7 +215,7 @@ def test_get_chats_by_valid_user_id():
     assert chats == sorted(chats, key=lambda message: message["name"])
 
 def test_get_chats_by_inalid_user_id():
-    id = "bad_id"
+    id = 900
     test_client = TestClient(app)
     response = test_client.get(f"/users/{id}/chats")
 

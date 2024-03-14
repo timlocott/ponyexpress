@@ -52,12 +52,12 @@ def get_users(chat_id: str, session: Session = Depends(db.get_session)):
         users=sorted(users, key=sort_key)
     )
 
-@chat_router.delete("/{chat_id}", response_model=None, status_code=204)
-def delete_chat(chat_id: str, session: Session = Depends(db.get_session)):
-    """Delete a chat"""
-    db.delete_chat(session, chat_id)
+# @chat_router.delete("/{chat_id}", response_model=None, status_code=204)
+# def delete_chat(chat_id: str, session: Session = Depends(db.get_session)):
+#     """Delete a chat"""
+#     db.delete_chat(session, chat_id)
 
 @chat_router.put("/{chat_id}", response_model=ChatResponse)
 def update_chat(chat_id: str, chat_update: ChatUpdate, session: Session = Depends(db.get_session)):
     """Update a chat"""
-    return db.update_chat_by_id(session, chat_id, chat_update)
+    return db.update_chat_by_id(session=session, c_id=chat_id, chat_update=chat_update)
