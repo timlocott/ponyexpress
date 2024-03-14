@@ -214,7 +214,7 @@ def test_get_chats_by_valid_user_id():
     assert meta["count"] == len(chats)
     assert chats == sorted(chats, key=lambda message: message["name"])
 
-def test_get_chats_by_inalid_user_id():
+def test_get_chats_by_invalid_user_id():
     id = 900
     test_client = TestClient(app)
     response = test_client.get(f"/users/{id}/chats")

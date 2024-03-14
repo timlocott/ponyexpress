@@ -145,7 +145,8 @@ def update_chat_by_id(session: Session, c_id: int, chat_update: ChatUpdate) -> C
     :param c_id: id of chat
     :raises: EntityNotFoundException: If chat id does not exist
     """
-    chat = get_chat_by_id(session, c_id).chat
+    get_chat_by_id(session, c_id)
+    chat = session.get(ChatInDB, c_id)
     
     for attr, value in chat_update.model_dump(exclude_unset=True).items():
         setattr(chat, attr, value)
