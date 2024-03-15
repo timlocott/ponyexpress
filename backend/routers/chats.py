@@ -7,6 +7,7 @@ from backend.auth import get_current_user
 from backend.entities import (
     ChatCollection,
     ChatResponse,
+    ChatResponseChat,
     ChatUpdate,
     Message,
     MessageCollection,
@@ -64,7 +65,7 @@ def get_users(chat_id: int, session: Session = Depends(db.get_session)):
 #     """Delete a chat"""
 #     db.delete_chat(session, chat_id)
 
-@chat_router.put("/{chat_id}", response_model=ChatResponse)
+@chat_router.put("/{chat_id}", response_model=ChatResponseChat)
 def update_chat(chat_id: int, 
                 chat_update: ChatUpdate, 
                 session: Session = Depends(db.get_session)):
