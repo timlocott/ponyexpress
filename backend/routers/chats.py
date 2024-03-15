@@ -39,7 +39,7 @@ def get_chat(chat_id: int, include: list = Query(None), session: Session = Depen
             include_users = True
     return db.get_chat_by_id(session, chat_id, include_messages, include_users)
 
-@chat_router.get("/{chat_id}/messages", response_model=MessageCollection, status_code=201)
+@chat_router.get("/{chat_id}/messages", response_model=MessageCollection)
 def get_messages(chat_id: int, session: Session = Depends(db.get_session)):
     """Get a collection of messages for a specified chat."""
     messages = db.get_messages_by_chat_id(session, chat_id)
@@ -71,7 +71,7 @@ def update_chat(chat_id: int,
     """Update a chat"""
     return db.update_chat_by_id(session=session, c_id=chat_id, chat_update=chat_update)
 
-@chat_router.post("/{chat_id}/messages", response_model=Message)
+@chat_router.post("/{chat_id}/messages", response_model=Message, status_code=201)
 def create_message_in_chat(chat_id: int,
                            message_create: MessageCreate, 
                            session: Session = Depends(db.get_session), 
