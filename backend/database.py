@@ -78,14 +78,9 @@ def get_chats_by_user_id(session: Session, u_id: int) -> list[ChatNM]:
     :return: list of chats
     :raises: EntityNotFoundException: If user id does not exist
     """
-    user = get_user_by_id(session, u_id)
-    # result : list[ChatNM] = []
-
+    get_user_by_id(session, u_id)
     user = session.get(UserInDB, u_id)
-    # for chat in user.chats:
-    #     result.append(chat)
 
-    # return result
     return user.chats
 
 # ----------------------------- chats ----------------------------- #

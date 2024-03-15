@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.routers.users import user_router
 from backend.routers.chats import chat_router
+from backend.auth import auth_router
 from backend.database import EntityNotFoundException, DuplicateEntityException, create_db_and_tables
 
 @asynccontextmanager
@@ -20,6 +21,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.include_router(auth_router)
 app.include_router(user_router)
 app.include_router(chat_router)
 
