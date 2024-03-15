@@ -28,7 +28,7 @@ def get_chats(session: Session = Depends(db.get_session)):
     )
 
 @chat_router.get("/{chat_id}", response_model=ChatResponse)
-def get_chat(chat_id: str, include: list = Query(None),session: Session = Depends(db.get_session)):
+def get_chat(chat_id: int, include: list = Query(None),session: Session = Depends(db.get_session)):
     """Gets a specific chat with the corresponding ID"""
     include_messages = False
     include_users = False
@@ -40,7 +40,7 @@ def get_chat(chat_id: str, include: list = Query(None),session: Session = Depend
     return db.get_chat_by_id(session, chat_id, include_messages, include_users)
 
 @chat_router.get("/{chat_id}/messages", response_model=MessageCollection)
-def get_messages(chat_id: str, session: Session = Depends(db.get_session)):
+def get_messages(chat_id: int, session: Session = Depends(db.get_session)):
     """Get a collection of messages for a specified chat."""
     messages = db.get_messages_by_chat_id(session, chat_id)
     sort_key = lambda message: getattr(message, "created_at")
@@ -50,7 +50,7 @@ def get_messages(chat_id: str, session: Session = Depends(db.get_session)):
     )
 
 @chat_router.get("/{chat_id}/users", response_model=UserCollection)
-def get_users(chat_id: str, session: Session = Depends(db.get_session)):
+def get_users(chat_id: int, session: Session = Depends(db.get_session)):
     """Get a collection of users for a specified chat."""
     users = db.get_users_by_chat_id(session, chat_id)
     sort_key = lambda user: getattr(user, "id")
@@ -65,14 +65,14 @@ def get_users(chat_id: str, session: Session = Depends(db.get_session)):
 #     db.delete_chat(session, chat_id)
 
 @chat_router.put("/{chat_id}", response_model=ChatResponse)
-def update_chat(chat_id: str, 
+def update_chat(chat_id: int, 
                 chat_update: ChatUpdate, 
                 session: Session = Depends(db.get_session)):
     """Update a chat"""
     return db.update_chat_by_id(session=session, c_id=chat_id, chat_update=chat_update)
 
 @chat_router.post("/{chat_id}/messages", response_model=Message)
-def create_message_in_chat(chat_id: str,
+def create_message_in_chat(chat_id: int,
                            message_create: MessageCreate, 
                            session: Session = Depends(db.get_session), 
                            user: UserInDB = Depends(get_current_user)):
