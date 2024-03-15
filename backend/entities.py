@@ -6,6 +6,10 @@ from sqlmodel import Field, SQLModel
 class Metadata(BaseModel):
     """Represents metadata for a collection."""
     count: int
+class ChatMetaData(BaseModel):
+    """Represents metadata for a chat."""
+    message_count: int
+    user_count: int
 
 # ----------------------------- messages ----------------------------- #
 
@@ -16,6 +20,9 @@ class Message(SQLModel):
     chat_id: int
     user: "User"
     created_at: datetime
+
+class MessageCreate(SQLModel):
+    text: str = None
 
 class MessageCollection(BaseModel):
     """Represents an API response for a collection of messages."""
@@ -30,16 +37,17 @@ class User(SQLModel):
     username: str
     email: str
     created_at: datetime
-# class UserInDB(BaseModel):
-#     """Represents a user in the database."""
-#     id: str
-#     created_at: datetime
 
 class UserCreate(SQLModel):
     """Represents model for adding a new user to the system."""
     username: str
     email: str
     hashed_password: str
+
+class UserUpdate(SQLModel):
+    """Represents a request model for updating a user"""
+    username: str = None
+    email: str = None
 
 class UserResponse(BaseModel):
     """Represents an API response for a user."""
@@ -58,7 +66,6 @@ class Chat(SQLModel):
     name: str
     owner: User
     created_at: datetime
-    # user_ids: list[int]
     messages: list[Message]
 
 class ChatNM(SQLModel):
@@ -66,23 +73,13 @@ class ChatNM(SQLModel):
     id: int
     name: str
     owner: User
-    # user_ids: list[int]
     created_at: datetime
 
-# class ChatInDB(BaseModel):
-#     """Represents a chat in the database."""
-#     id: str
-#     name: str
-#     user_ids: list[str]
-#     messages: list[Message]
-#     owner_id: str
-#     created_at: datetime
-
 class ChatUpdate(SQLModel):
+    """Represents a request model for updating a chat"""
     id: int = None
     name: str = None
     owner: User = None
-    # user_ids: list[int] = None
     messages: list[Message] = None
     created_at: datetime = None
 
@@ -93,4 +90,5 @@ class ChatCollection(BaseModel):
 
 class ChatResponse(BaseModel):
     """Represents an API response for a chat."""
+    meta:
     chat: ChatNM

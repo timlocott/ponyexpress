@@ -4,11 +4,13 @@ from sqlmodel import Session, SQLModel, create_engine, select
 
 from backend.entities import(
     ChatNM,
+    MessageCreate,
     UserResponse,
     UserCreate,
     ChatUpdate,
     Message,
     ChatResponse,
+    UserUpdate,
 )
 from backend.schema import(
     UserChatLinkInDB,
@@ -46,6 +48,7 @@ def get_all_users(session: Session) -> list[UserInDB]:
 def create_user(session: Session, user_create: UserCreate) -> UserResponse:
     """
     Create new user in database
+    :param session: session
     :param user_create: attribute values for the new user
     :return: the new user
     :raises: DuplicateChatException: If chat id is already exists
@@ -59,9 +62,29 @@ def create_user(session: Session, user_create: UserCreate) -> UserResponse:
     session.refresh(user)
     return UserResponse(user=user)
 
+def update_user_by_id(session: Session, u_id: int, user_update: UserUpdate) -> UserResponse:
+    """
+    Update user
+    :param u_id: id of user
+    :param user_update: user update request model
+    :param session: session
+    """
+
+    user = session.get(UserInDB, u_id)
+    
+    for attr, value in user_update.model_dump(exclude_unset=True).items():
+        setattr(user, attr, value)
+
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    return UserResponse(user=user)
+
 def get_user_by_id(session: Session, u_id: int) -> UserResponse: 
     """
     Get user from database
+    :param session: session
     :param u_id: id of the user
     :return: the user
     :raises: EntityNotFoundException: If user id does not exist
@@ -74,6 +97,7 @@ def get_user_by_id(session: Session, u_id: int) -> UserResponse:
 def get_chats_by_user_id(session: Session, u_id: int) -> list[ChatNM]:
     """
     Get chats related to user id
+    :param session: session
     :param u_id: id of the user
     :return: list of chats
     :raises: EntityNotFoundException: If user id does not exist
@@ -95,6 +119,7 @@ def get_all_chats(session: Session) -> list[ChatInDB]:
 def get_chat_by_id(session: Session, c_id: int) -> ChatResponse: 
     """
     Get chat from database
+    :param session: session
     :param c_id: id of the chat
     :return: the chat
     :raises: EntityNotFoundException: If chat id does not exist
@@ -104,9 +129,29 @@ def get_chat_by_id(session: Session, c_id: int) -> ChatResponse:
         return ChatResponse(chat=chat)
     raise EntityNotFoundException(entity_name="Chat", entity_id=c_id,)
 
+def create_message(session: Session, chat_id: int, message_create: MessageCreate, user: UserInDB) -> Message:
+    """
+    Create new message in database
+    :param session: session
+    :param message_create: message create request model
+    :param user: user owning message
+    :return: the new message
+    """
+    get_chat_by_id(session, chat_id)
+    message = MessageInDB(
+        **message_create.model_dump(),
+        chat_id=chat_id,
+        user=user
+    )
+    session.add(message)
+    session.commit()
+    session.refresh(message)
+    return message
+
 def get_messages_by_chat_id(session: Session, c_id: int) -> list[Message]:
     """
     Get all messages for a specified chat
+    :param session: session
     :param c_id: id of the chat
     :return: list of messages
     :raises: EntityNotFoundException: If chat id does not exist
@@ -117,6 +162,7 @@ def get_messages_by_chat_id(session: Session, c_id: int) -> list[Message]:
 def get_users_by_chat_id(session: Session, c_id: int) -> list[UserInDB]:
     """
     Get all users for a specified chat
+    :param session: session
     :param c_id: id of the chat
     :return: list of users
     :raises: EntityNotFoundException: If chat id does not exist
@@ -127,6 +173,7 @@ def get_users_by_chat_id(session: Session, c_id: int) -> list[UserInDB]:
 def delete_chat(session: Session, c_id: int) -> None:
     """
     Delete chat from database
+    :param session: session
     :param c_id: id of the chat
     :raises: EntityNotFoundException: If chat id does not exist
     """
@@ -137,7 +184,9 @@ def delete_chat(session: Session, c_id: int) -> None:
 def update_chat_by_id(session: Session, c_id: int, chat_update: ChatUpdate) -> ChatResponse:
     """
     Update chat
+    :param session: session
     :param c_id: id of chat
+    :param chat_update: chat update request model
     :raises: EntityNotFoundException: If chat id does not exist
     """
     get_chat_by_id(session, c_id)

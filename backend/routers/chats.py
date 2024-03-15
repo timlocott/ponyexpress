@@ -2,18 +2,17 @@ from sqlmodel import Session
 from fastapi import APIRouter, Depends
 from backend import database as db
 
+from backend.auth import get_current_user
 from backend.entities import (
     ChatCollection,
     ChatResponse, 
     ChatUpdate,
+    Message,
     MessageCollection,
+    MessageCreate,
     UserCollection,
 )
-
-from backend.schema import (
-    ChatInDB,
-    UserChatLinkInDB,
-)
+from backend.schema import UserInDB
 
 chat_router = APIRouter(prefix="/chats", tags=["Chats"])
 
@@ -58,6 +57,16 @@ def get_users(chat_id: str, session: Session = Depends(db.get_session)):
 #     db.delete_chat(session, chat_id)
 
 @chat_router.put("/{chat_id}", response_model=ChatResponse)
-def update_chat(chat_id: str, chat_update: ChatUpdate, session: Session = Depends(db.get_session)):
+def update_chat(chat_id: str, 
+                chat_update: ChatUpdate, 
+                session: Session = Depends(db.get_session)):
     """Update a chat"""
     return db.update_chat_by_id(session=session, c_id=chat_id, chat_update=chat_update)
+
+@chat_router.post("/{chat_id}/messages", response_model=Message)
+def create_message_in_chat(chat_id: str,
+                           message_create: MessageCreate, 
+                           session: Session = Depends(db.get_session), 
+                           user: UserInDB = Depends(get_current_user)):
+    return db.create_message(session, chat_id, message_create, user)
+
