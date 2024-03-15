@@ -5,6 +5,7 @@ from sqlmodel import Session, SQLModel, create_engine, select
 from backend.entities import(
     ChatMetadata,
     ChatNM,
+    ChatResponseChat,
     ChatResponseMessageAndUsers,
     ChatResponseMessages,
     ChatResponseUsers,
@@ -236,7 +237,7 @@ def delete_chat(session: Session, c_id: int) -> None:
     session.delete(chat)
     session.commit()
 
-def update_chat_by_id(session: Session, c_id: int, chat_update: ChatUpdate) -> ChatResponse:
+def update_chat_by_id(session: Session, c_id: int, chat_update: ChatUpdate) -> ChatResponseChat:
     """
     Update chat
     :param session: session
@@ -254,11 +255,7 @@ def update_chat_by_id(session: Session, c_id: int, chat_update: ChatUpdate) -> C
     session.commit()
     session.refresh(chat)
     
-    meta = ChatMetadata(
-        message_count=len(chat.messages),
-        user_count=len(chat.users)
-    )
-    return ChatResponse(meta=meta,chat=chat)
+    return ChatResponseChat(chat=chat)
 
 # ----------------------------- exception classes ----------------------------- #
 

@@ -93,6 +93,10 @@ class ChatResponse(BaseModel):
     meta: ChatMetadata
     chat: ChatNM
 
+class ChatResponseChat(BaseModel):
+    """Represents an API response for a chat that includes just the chat"""
+    chat: ChatNM
+
 class ChatResponseMessages(ChatResponse):
     """Represents an API response for a chat that includes messages"""
     messages: list[Message]
