@@ -90,5 +90,7 @@ class ChatCollection(BaseModel):
 
 class ChatResponse(BaseModel):
     """Represents an API response for a chat."""
-    meta:
+    meta: ChatMetaData
     chat: ChatNM
+    messages: list[Message]
+    users: list[User]
