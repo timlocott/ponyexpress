@@ -92,5 +92,16 @@ class ChatResponse(BaseModel):
     """Represents an API response for a chat."""
     meta: ChatMetadata
     chat: ChatNM
-    messages: Optional[list[Message]]
-    users: Optional[list[User]]
+
+class ChatResponseMessages(ChatResponse):
+    """Represents an API response for a chat that includes messages"""
+    messages: list[Message]
+
+class ChatResponseUsers(ChatResponse):
+    """Represents an API response for a chat that includes users"""
+    users: list[User]
+
+class ChatResponseMessageAndUsers(ChatResponse):
+    """Represents an API response for a chat that includes messages and users"""
+    messages: list[Message]
+    users: list[User]

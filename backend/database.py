@@ -5,6 +5,9 @@ from sqlmodel import Session, SQLModel, create_engine, select
 from backend.entities import(
     ChatMetadata,
     ChatNM,
+    ChatResponseMessageAndUsers,
+    ChatResponseMessages,
+    ChatResponseUsers,
     MessageCreate,
     UserResponse,
     UserCreate,
@@ -117,7 +120,7 @@ def get_all_chats(session: Session) -> list[ChatInDB]:
     """
     return session.exec(select(ChatInDB)).all()
 
-def get_chat_by_id(session: Session, c_id: int, include_messages: bool, include_users: bool) -> ChatResponse: 
+def get_chat_by_id(session: Session, c_id: int, include_messages: bool, include_users: bool): 
     """
     Get chat from database
     :param session: session
@@ -127,29 +130,58 @@ def get_chat_by_id(session: Session, c_id: int, include_messages: bool, include_
     """
     chat = session.get(ChatInDB, c_id)
     if chat:
-        meta=ChatMetadata(
+        meta = ChatMetadata(
             message_count=len(chat.messages),
             user_count=len(chat.users)
-        ),
-        include_data = {
-            "meta": meta,
-            "chat": chat,
-        }
-        if include_messages:
-            include_data["messages"] = chat.messages
-        if include_users:
-            include_data["users"] = chat.users
-        # return ChatResponse(
-        #     meta=ChatMetadata(
-        #         message_count=len(chat.messages),
-        #         user_count=len(chat.users)
-        #     ),
-        #     chat=chat,
-        #     messages = chat.messages if include_messages else None,
-        #     users = chat.users if include_users else None
-        # )
-        print(include_data)
-        return ChatResponse(**include_data)
+        )
+        if include_messages and not include_users:
+            return ChatResponseMessages(
+                meta=meta,
+                chat=chat,
+                messages=chat.messages
+            )
+        elif not include_messages and include_users:
+            return ChatResponseUsers(
+                meta=meta,
+                chat=chat,
+                users=chat.users
+            )
+        elif include_messages and include_users:
+            return ChatResponseMessageAndUsers(
+                meta=meta,
+                chat=chat,
+                messages=chat.messages,
+                users=chat.users
+            )
+        else:
+            return ChatResponse(
+                meta= meta,
+                chat=chat,
+            )
+        #________________________________________________________________#
+        # meta=ChatMetadata(
+        #     message_count=len(chat.messages),
+        #     user_count=len(chat.users)
+        # ),
+        # include_data = {
+        #     "meta": meta,
+        #     "chat": chat,
+        # }
+        # if include_messages:
+        #     include_data["messages"] = chat.messages
+        # if include_users:
+        #     include_data["users"] = chat.users
+        # # return ChatResponse(
+        # #     meta=ChatMetadata(
+        # #         message_count=len(chat.messages),
+        # #         user_count=len(chat.users)
+        # #     ),
+        # #     chat=chat,
+        # #     messages = chat.messages if include_messages else None,
+        # #     users = chat.users if include_users else None
+        # # )
+        # print(include_data)
+        # return ChatResponse(**include_data)
     raise EntityNotFoundException(entity_name="Chat", entity_id=c_id,)
 
 def create_message(session: Session, chat_id: int, message_create: MessageCreate, user: UserInDB) -> Message:

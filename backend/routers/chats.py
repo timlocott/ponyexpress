@@ -6,7 +6,7 @@ from backend import database as db
 from backend.auth import get_current_user
 from backend.entities import (
     ChatCollection,
-    ChatResponse, 
+    ChatResponse,
     ChatUpdate,
     Message,
     MessageCollection,
@@ -27,8 +27,8 @@ def get_chats(session: Session = Depends(db.get_session)):
         chats=sorted(chats, key=sort_key)
     )
 
-@chat_router.get("/{chat_id}", response_model=ChatResponse)
-def get_chat(chat_id: int, include: list = Query(None),session: Session = Depends(db.get_session)):
+@chat_router.get("/{chat_id}")
+def get_chat(chat_id: int, include: list = Query(None), session: Session = Depends(db.get_session)):
     """Gets a specific chat with the corresponding ID"""
     include_messages = False
     include_users = False
