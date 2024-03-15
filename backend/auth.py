@@ -40,7 +40,7 @@ class Claims(BaseModel):
 
 # --------------------------- routes --------------------------- #
 
-@auth_router.post("/registration", response_model=UserResponse)
+@auth_router.post("/registration", response_model=UserResponse, status_code=201)
 def register_new_user(
     registration: UserRegistration,
     session: Session = Depends(db.get_session)
