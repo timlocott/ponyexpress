@@ -50,15 +50,10 @@ def register_new_user(
         select(UserInDB)
         .where((UserInDB.username == registration.username) 
                | (UserInDB.email == registration.email))).first()
-    print("USER")
-    print(user)
     if user:
-        print("ANOTHER USER EXISTS")
         if user.username == registration.username:
-            print("USERNAME IS THE SAME")
             raise DupValException("username", user.username)
         elif user.email == registration.email:
-            print("EMAIL IS THE SAME")
             raise DupValException("email", user.email)
     else:
         hashed_password = pwd_context.hash(registration.password)
