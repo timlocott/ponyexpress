@@ -253,8 +253,12 @@ def update_chat_by_id(session: Session, c_id: int, chat_update: ChatUpdate) -> C
     session.add(chat)
     session.commit()
     session.refresh(chat)
-
-    return ChatResponse(chat=chat)
+    
+    meta = ChatMetadata(
+        message_count=len(chat.messages),
+        user_count=len(chat.users)
+    )
+    return ChatResponse(meta=meta,chat=chat)
 
 # ----------------------------- exception classes ----------------------------- #
 
