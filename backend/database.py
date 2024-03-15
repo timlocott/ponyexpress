@@ -3,6 +3,7 @@ from sqlmodel import Session, SQLModel, create_engine, select
 # from datetime import datetime
 
 from backend.entities import(
+    ChatMetadata,
     ChatNM,
     MessageCreate,
     UserResponse,
@@ -116,7 +117,7 @@ def get_all_chats(session: Session) -> list[ChatInDB]:
     """
     return session.exec(select(ChatInDB)).all()
 
-def get_chat_by_id(session: Session, c_id: int) -> ChatResponse: 
+def get_chat_by_id(session: Session, c_id: int, include_messages: bool, include_users: bool) -> ChatResponse: 
     """
     Get chat from database
     :param session: session
@@ -126,7 +127,29 @@ def get_chat_by_id(session: Session, c_id: int) -> ChatResponse:
     """
     chat = session.get(ChatInDB, c_id)
     if chat:
-        return ChatResponse(chat=chat)
+        meta=ChatMetadata(
+            message_count=len(chat.messages),
+            user_count=len(chat.users)
+        ),
+        include_data = {
+            "meta": meta,
+            "chat": chat,
+        }
+        if include_messages:
+            include_data["messages"] = chat.messages
+        if include_users:
+            include_data["users"] = chat.users
+        # return ChatResponse(
+        #     meta=ChatMetadata(
+        #         message_count=len(chat.messages),
+        #         user_count=len(chat.users)
+        #     ),
+        #     chat=chat,
+        #     messages = chat.messages if include_messages else None,
+        #     users = chat.users if include_users else None
+        # )
+        print(include_data)
+        return ChatResponse(**include_data)
     raise EntityNotFoundException(entity_name="Chat", entity_id=c_id,)
 
 def create_message(session: Session, chat_id: int, message_create: MessageCreate, user: UserInDB) -> Message:
@@ -137,7 +160,7 @@ def create_message(session: Session, chat_id: int, message_create: MessageCreate
     :param user: user owning message
     :return: the new message
     """
-    get_chat_by_id(session, chat_id)
+    get_chat_by_id(session, chat_id, False, False)
     message = MessageInDB(
         **message_create.model_dump(),
         chat_id=chat_id,
@@ -156,7 +179,7 @@ def get_messages_by_chat_id(session: Session, c_id: int) -> list[Message]:
     :return: list of messages
     :raises: EntityNotFoundException: If chat id does not exist
     """
-    chat: ChatInDB = get_chat_by_id(session, c_id).chat
+    chat: ChatInDB = get_chat_by_id(session, c_id, False, False).chat
     return session.get(ChatInDB, c_id).messages
 
 def get_users_by_chat_id(session: Session, c_id: int) -> list[UserInDB]:
@@ -167,7 +190,7 @@ def get_users_by_chat_id(session: Session, c_id: int) -> list[UserInDB]:
     :return: list of users
     :raises: EntityNotFoundException: If chat id does not exist
     """
-    chat: ChatInDB = get_chat_by_id(session, c_id).chat
+    chat: ChatInDB = get_chat_by_id(session, c_id, False, False).chat
     return session.get(ChatInDB, c_id).users
 
 def delete_chat(session: Session, c_id: int) -> None:
@@ -177,7 +200,7 @@ def delete_chat(session: Session, c_id: int) -> None:
     :param c_id: id of the chat
     :raises: EntityNotFoundException: If chat id does not exist
     """
-    chat = get_chat_by_id(session, c_id).chat
+    chat = get_chat_by_id(session, c_id, False, False).chat
     session.delete(chat)
     session.commit()
 
@@ -189,7 +212,7 @@ def update_chat_by_id(session: Session, c_id: int, chat_update: ChatUpdate) -> C
     :param chat_update: chat update request model
     :raises: EntityNotFoundException: If chat id does not exist
     """
-    get_chat_by_id(session, c_id)
+    get_chat_by_id(session, c_id, False, False)
     chat = session.get(ChatInDB, c_id)
     
     for attr, value in chat_update.model_dump(exclude_unset=True).items():

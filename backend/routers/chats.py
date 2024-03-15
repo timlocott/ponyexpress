@@ -1,5 +1,6 @@
+from typing import List
 from sqlmodel import Session
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from backend import database as db
 
 from backend.auth import get_current_user
@@ -27,9 +28,16 @@ def get_chats(session: Session = Depends(db.get_session)):
     )
 
 @chat_router.get("/{chat_id}", response_model=ChatResponse)
-def get_chat(chat_id: str, session: Session = Depends(db.get_session)):
+def get_chat(chat_id: str, include: list = Query(None),session: Session = Depends(db.get_session)):
     """Gets a specific chat with the corresponding ID"""
-    return db.get_chat_by_id(session, chat_id)
+    include_messages = False
+    include_users = False
+    if include:
+        if "messages" in include:
+            include_messages = True
+        if "users" in include:
+            include_users = True
+    return db.get_chat_by_id(session, chat_id, include_messages, include_users)
 
 @chat_router.get("/{chat_id}/messages", response_model=MessageCollection)
 def get_messages(chat_id: str, session: Session = Depends(db.get_session)):

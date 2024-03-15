@@ -1,12 +1,12 @@
 from datetime import datetime
-
+from typing import Optional
 from pydantic import BaseModel
 from sqlmodel import Field, SQLModel
 
 class Metadata(BaseModel):
     """Represents metadata for a collection."""
     count: int
-class ChatMetaData(BaseModel):
+class ChatMetadata(BaseModel):
     """Represents metadata for a chat."""
     message_count: int
     user_count: int
@@ -90,7 +90,7 @@ class ChatCollection(BaseModel):
 
 class ChatResponse(BaseModel):
     """Represents an API response for a chat."""
-    meta: ChatMetaData
+    meta: ChatMetadata
     chat: ChatNM
-    messages: list[Message]
-    users: list[User]
+    messages: Optional[list[Message]]
+    users: Optional[list[User]]
