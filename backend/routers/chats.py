@@ -12,6 +12,7 @@ from backend.entities import (
     Message,
     MessageCollection,
     MessageCreate,
+    MessageResponse,
     UserCollection,
 )
 from backend.schema import UserInDB
@@ -72,7 +73,7 @@ def update_chat(chat_id: int,
     """Update a chat"""
     return db.update_chat_by_id(session=session, c_id=chat_id, chat_update=chat_update)
 
-@chat_router.post("/{chat_id}/messages", response_model=Message, status_code=201)
+@chat_router.post("/{chat_id}/messages", response_model=MessageResponse, status_code=201)
 def create_message_in_chat(chat_id: int,
                            message_create: MessageCreate, 
                            session: Session = Depends(db.get_session), 

@@ -10,6 +10,7 @@ from backend.entities import(
     ChatResponseMessages,
     ChatResponseUsers,
     MessageCreate,
+    MessageResponse,
     UserResponse,
     UserCreate,
     ChatUpdate,
@@ -185,7 +186,7 @@ def get_chat_by_id(session: Session, c_id: int, include_messages: bool, include_
         # return ChatResponse(**include_data)
     raise EntityNotFoundException(entity_name="Chat", entity_id=c_id,)
 
-def create_message(session: Session, chat_id: int, message_create: MessageCreate, user: UserInDB) -> Message:
+def create_message(session: Session, chat_id: int, message_create: MessageCreate, user: UserInDB) -> MessageResponse:
     """
     Create new message in database
     :param session: session
@@ -202,7 +203,7 @@ def create_message(session: Session, chat_id: int, message_create: MessageCreate
     session.add(message)
     session.commit()
     session.refresh(message)
-    return message
+    return MessageResponse(message=message)
 
 def get_messages_by_chat_id(session: Session, c_id: int) -> list[Message]:
     """

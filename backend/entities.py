@@ -24,6 +24,9 @@ class Message(SQLModel):
 class MessageCreate(SQLModel):
     text: str = None
 
+class MessageResponse(BaseModel):
+    message: Message
+
 class MessageCollection(BaseModel):
     """Represents an API response for a collection of messages."""
     meta: Metadata
