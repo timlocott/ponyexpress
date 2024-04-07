@@ -17,10 +17,11 @@ function UserProvider({ children }) {
         staleTime: Infinity,
         queryFn: () => (
             fetch(
-                "http://127.0.0.1/users/me",
+                "http://127.0.0.1:8000/users/me",
                 {
                     headers: {
                         "Authorization": "Bearer " + token,
+                        "Content-Type": "application/json",
                     },
                 },
             ).then((response) => {
@@ -34,8 +35,10 @@ function UserProvider({ children }) {
         ),
     });
 
+    const emptyUser = { id: 0, email: "", username: "loading" }
+
     return (
-        <UserContext.Provider value={data?.user}>
+        <UserContext.Provider value={data?.user || emptyUser}>
             {children}
         </UserContext.Provider>
     );

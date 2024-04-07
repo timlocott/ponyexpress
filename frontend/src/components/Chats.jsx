@@ -1,19 +1,14 @@
 /* eslint-disable react/prop-types */
 import { useQuery } from "react-query";
 import { Link, useParams } from "react-router-dom";
-import "./Chats.css";
+import NewMessage from "./NewMessage";
+// import "./Chats.css";
 
 function ChatListItem({ chat }) {
     return (
-        <Link key={chat.id} to={`/chats/${chat.id}`} className="chat-list-item">
-            <div className="chat-list-item-name">
+        <Link key={chat.id} to={`/chats/${chat.id}`} className="mx-1.5 p-3 hover:bg-wenge hover:text-vanilla se">
+            <div className="font-bold">
                 {chat.name}
-            </div>
-            <div className="chat-list-item-userIds">
-                {chat.user_ids.join(", ")}
-            </div>
-            <div className="chat-list-item-datetime">
-                Created on: {new Date(chat.created_at).toDateString()}
             </div>
         </Link>
     )
@@ -22,7 +17,7 @@ function ChatListItem({ chat }) {
 
 function ChatList({ chats }) {
     return (
-        <div className="chat-list">
+        <div className="flex flex-col">
             {chats.map((chat) => (
                 <ChatListItem key={chat.id} chat={chat} />
             ))}
@@ -41,8 +36,7 @@ function ChatListContainer() {
 
     if (data?.chats) {
         return (
-        <div className="chat-list-container">
-            <h2>Chats</h2>
+        <div className="flex flex-col grow-0 shrink-0 w-max bg-vanilla">
             <ChatList chats={data.chats} />
         </div>
         )
@@ -66,6 +60,7 @@ function ChatCard({ chat }) {
         return (
         <div className="chat-card">
             <MessageList messages={data.messages} />
+            <NewMessage chatId={chat.id} />
         </div>
         )
     }
@@ -77,9 +72,8 @@ function ChatCard({ chat }) {
 
 function ChatCardContainer({ chat }) {
     return (
-        <div className="container-margin-sides">
-                <h2> {chat.name} </h2>
-                <div className="chat-card-container">
+        <div className="">
+                <div className="flex h-screen max-h-screen overflow-y-scroll scrollbar-thumb-green scrollbar-track-gray-300 flex-col-reverse">
                     <ChatCard chat={chat} />
                 </div>
         </div>
@@ -89,9 +83,8 @@ function ChatCardContainer({ chat }) {
 function ChatCardQueryContainer({ chatId }){
     if (!chatId) {
         return (
-            <div className="container-margin-sides">
-                <h2>&nbsp;</h2>
-                <h3>Select a chat</h3>
+            <div className="flex flex-col">
+                <h3 className="ml-14 mt-10 text-verdigris">Select a chat</h3>
             </div>
         );
     }
@@ -108,12 +101,12 @@ function ChatCardQueryContainer({ chatId }){
         return <ChatCardContainer chat={data.chat} />
     }
 
-    return <h2>loading...</h2>
+    return <h2 className="ml-14 mt-10 text-verdigris">loading...</h2>
 }
 
 function MessageList({ messages }) {
     return (
-        <div className="message-list">
+        <div className="flex flex-col mx-2.5 my-4 p-2.5">
             {messages.map((message) => (
                 <MessageListItem key={message.id} message={message} />
             ))}
@@ -123,16 +116,16 @@ function MessageList({ messages }) {
 
 function MessageListItem({ message }) {
     return (
-        <div key={message.id} className="message-list-item">
-            <div className="message-detail">
-                <div className="message-list-item-userid">
-                    {message.user_id}
+        <div key={message.id} className="m-1.5 p-2.5 border border-britishRacingGreen">
+            <div className="flex flex-row justify-between">
+                <div className="font-bold text-sm mr-2.5 text-verdigris">
+                    {message.user.username}
                 </div>
-                <div className="message-list-item-datetime">
+                <div className="text-xs font-extralight text-beige">
                     {new Date(message.created_at).toDateString()} - {new Date(message.created_at).toLocaleTimeString()}
                 </div>
             </div>
-            <div className="message-list-item-text">
+            <div className="my-2.5 ml-2.5 font-extralight text-m text-tomato">
                 {message.text}
             </div>
         </div>
@@ -142,8 +135,7 @@ function MessageListItem({ message }) {
 function Chats() {
     const { chatId } = useParams();
     return (
-        <div className="chats-page">
-            <h1 className="title">PONY EXPRESS</h1>
+        <div className="flex flex-row justify-start h-screen max-h-screen max-w-screen">
             <ChatListContainer />
             <ChatCardQueryContainer chatId={chatId} />
         </div>

@@ -6,7 +6,7 @@ import { NavLink } from "react-router-dom";
 // eslint-disable-next-line react/prop-types
 function NavItem({to,name}) {
     return (
-        <NavLink to={to}>
+        <NavLink to={to} className="p-2 hover:bg-vanilla hover:text-wenge">
             {name}
         </NavLink>
     );
@@ -17,7 +17,8 @@ function AuthenticatedNavItems() {
 
     return (
         <>
-            <NavItem to="/" name="pony express" />
+            <NavItem to="/" name="pony express"/>
+            <div className="flex-1"></div>
             <NavItem to="/profile" name={user.username} />
         </>
     );
@@ -36,7 +37,7 @@ function AppNav() {
     const { isLoggedIn } = useAuth();
 
     return (
-        <nav>
+        <nav className="flex flex-row justify-between bg-wenge border-b-2 border-vanilla text-vanilla">
             {isLoggedIn ?
                 <AuthenticatedNavItems /> :
                 <UnauthenticatedNavItems />

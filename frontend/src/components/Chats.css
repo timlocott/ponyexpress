@@ -1,4 +1,4 @@
-.title{
+/* .title{
     display: flex;
     align-items: center;
     max-width: min-content;
@@ -79,7 +79,7 @@
 
 /* ------------------------------------ Messages ------------------------------------ */
 
-.message-list {
+/* .message-list {
     margin: 10px 15px;
     display: flex;
     flex-direction: column;
@@ -120,11 +120,11 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-}
+} */
 
 /* ------------------------------------ Other ------------------------------------ */
 
-.container-margin-sides{
+/* .container-margin-sides{
     margin: 0 20px;
     flex-grow: 2;
-}
+} */
