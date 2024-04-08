@@ -66,7 +66,7 @@ function UnAuthenticatedRoutes() {
 
 function Main() {
   const { isLoggedIn } = useAuth();
-  const className = isLoggedIn ? "flex grow justify-start" : "flex grow justify-center";
+  const className = isLoggedIn ? "flex grow justify-center" : "flex grow justify-center";
 
   return (
     <main className={className}>
@@ -84,7 +84,7 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <UserProvider>
-            <div className="flex flex-col h-screen max-h-screen">
+            <div className="flex flex-col h-screen max-h-screen overflow-hidden">
               <Header />
               <Main />
             </div>

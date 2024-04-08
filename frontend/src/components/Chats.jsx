@@ -36,7 +36,7 @@ function ChatListContainer() {
 
     if (data?.chats) {
         return (
-        <div className="flex flex-col grow-0 shrink-0 w-max bg-vanilla">
+        <div className="flex flex-col grow-0 shrink-0 w-max bg-vanilla max-h-[95vh] h-[95vh]">
             <ChatList chats={data.chats} />
         </div>
         )
@@ -58,22 +58,24 @@ function ChatCard({ chat }) {
 
     if (data?.messages) {
         return (
-        <div className="chat-card">
-            <MessageList messages={data.messages} />
-            <NewMessage chatId={chat.id} />
-        </div>
+            <div>
+                <div>
+                    <MessageList messages={data.messages} />
+                </div>
+                <NewMessage chatId={chat.id} />
+            </div>
         )
     }
 
     return (
-        <h2 className="chat-card">loading...</h2>
+        <h2>loading...</h2>
     );
 }
 
 function ChatCardContainer({ chat }) {
     return (
-        <div className="">
-                <div className="flex h-screen max-h-screen overflow-y-scroll scrollbar-thumb-green scrollbar-track-gray-300 flex-col-reverse">
+        <div className="flex flex-row grow justify-center max-h-[98vh] h-[98vh]">
+                <div className="">
                     <ChatCard chat={chat} />
                 </div>
         </div>
@@ -106,7 +108,7 @@ function ChatCardQueryContainer({ chatId }){
 
 function MessageList({ messages }) {
     return (
-        <div className="flex flex-col mx-2.5 my-4 p-2.5">
+        <div className="flex mx-2.5 my-4 p-2.5 overflow-y-scroll flex-col max-h-[84vh] h-[84vh]">
             {messages.map((message) => (
                 <MessageListItem key={message.id} message={message} />
             ))}
@@ -134,8 +136,16 @@ function MessageListItem({ message }) {
 
 function Chats() {
     const { chatId } = useParams();
+    if (!chatId){
+        return (
+        <div className="flex grow flex-row justify-start">
+            <ChatListContainer />
+            <ChatCardQueryContainer chatId={chatId} />
+        </div>
+    );
+    }
     return (
-        <div className="flex flex-row justify-start h-screen max-h-screen max-w-screen">
+        <div className="flex grow flex-row justify-between">
             <ChatListContainer />
             <ChatCardQueryContainer chatId={chatId} />
         </div>

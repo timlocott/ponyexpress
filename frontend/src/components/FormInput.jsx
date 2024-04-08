@@ -10,9 +10,9 @@ function FormInput({ setter, ...props}){
     }
 
     return (
-        <div className="flex flex-col my-2 justify-center">
+        <div className="flex grow flex-col my-2 mr-2 justify-center">
             <label htmlFor={props.name} className="text-verdigris">{props.name}</label>
-            <input {...props} onChange={onChange} className="text-black"/>
+            <input {...props} onChange={onChange} className="text-black p-1"/>
         </div>
     );
 }
