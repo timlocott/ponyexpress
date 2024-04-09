@@ -8,34 +8,34 @@ import FormInput from "./FormInput";
 import Button from "./Button";
 
 function NewMessage({ chatId }){
-    const [messageText, setMessageText] = useState("");
+    const [text, setText] = useState("");
 
     // const user = useUser();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
-    const { token } = useAuth()
+    const { token } = useAuth();
 
     const mutation = useMutation({
-      mutationFn: () => (
+      mutationFn: () => {
         fetch(
           "http://127.0.0.1:8000/chats/" + chatId + "/messages",
           {
             method: "POST",
 
             headers: {
-              "Authorization": "Bearer " + token,
+              "Authorization": "Bearer " + token, 
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              messageText,
+              text: text,
             }),
           },
         ).then((response) => response.json())
-      ),
+      },
       // eslint-disable-next-line no-unused-vars
       onSuccess: (data) => {
         queryClient.invalidateQueries({
-          queryKey: ["chats"],
+          queryKey: ["messages", chatId],
         });
         navigate(`/chats/${chatId}`);
       },
@@ -49,7 +49,7 @@ function NewMessage({ chatId }){
     return (
         <div className="border-t border-vanilla px-6">
             <form onSubmit={onSubmit} className="flex grow flex-row justify-between">
-                <FormInput type="text" setter={setMessageText} />
+                <FormInput type="text" setter={setText} />
                 <Button type="submit">send</Button>
             </form>
         </div>
