@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { useNavigate } from "react-router-dom";
 // import { useUser } from "../context/user";
-import { useAuth } from "../context/auth";
+// import { useAuth } from "../context/auth";
+import { useAPI } from "../hooks";
 import FormInput from "./FormInput";
 import Button from "./Button";
 
@@ -13,24 +14,13 @@ function NewMessage({ chatId }){
     // const user = useUser();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
-    const { token } = useAuth();
+    // const { token } = useAuth();
+    const api = useAPI();
 
     const mutation = useMutation({
       mutationFn: () => {
-        fetch(
-          "http://127.0.0.1:8000/chats/" + chatId + "/messages",
-          {
-            method: "POST",
-
-            headers: {
-              "Authorization": "Bearer " + token, 
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              text: text,
-            }),
-          },
-        ).then((response) => response.json())
+        api.post("/chats/" + chatId + "/messages",{ text },)
+        .then((response) => response.json())
       },
       // eslint-disable-next-line no-unused-vars
       onSuccess: (data) => {

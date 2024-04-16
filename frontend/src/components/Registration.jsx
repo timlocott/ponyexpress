@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import FormInput from "../components/FormInput";
 import Button from "../components/Button";
+import { useAPIWithoutToken } from "../hooks";
 
 function Error({ message }) {
     if (message === "") {
@@ -36,6 +37,7 @@ function Registration() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
+    const api = useAPIWithoutToken();
     const navigate = useNavigate();
 
     const disabled = username === "" || email === "" || password === "";
@@ -43,26 +45,39 @@ function Registration() {
     const onSubmit = (e) => {
         e.preventDefault();
 
-        fetch(
-            "http://127.0.0.1:8000/auth/registration",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ username, email, password}),
-            },
-        ).then((response) => {
-            if (response.ok) {
-                navigate("/login");
-            } else if (response.status === 422) {
-                response.json().then((data) => {
-                    setError(data.detail.entity_field + " already taken");
-                });
-            } else {
-                setError("error loggin in")
-            }
-        });
+        // fetch(
+        //     "http://127.0.0.1:8000/auth/registration",
+        //     {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //         },
+        //         body: JSON.stringify({ username, email, password}),
+        //     },
+        // ).then((response) => {
+        //     if (response.ok) {
+        //         navigate("/login");
+        //     } else if (response.status === 422) {
+        //         response.json().then((data) => {
+        //             setError(data.detail.entity_field + " already taken");
+        //         });
+        //     } else {
+        //         setError("error loggin in")
+        //     }
+        // });
+
+        api.post("/auth/registration", { username, email, password})
+            .then((response) => {
+                if (response.ok) {
+                    navigate("/login");
+                } else if (response.status === 422) {
+                    response.json().then((data) => {
+                        setError(data.detail.entity_field + " already taken");
+                    });
+                } else {
+                    setError("error loggin in")
+                }
+            });
     }
 
     return (

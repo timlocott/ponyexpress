@@ -1,4 +1,5 @@
 # import json
+import os
 from sqlmodel import Session, SQLModel, create_engine, select
 # from datetime import datetime
 
@@ -25,10 +26,23 @@ from backend.schema import(
     MessageInDB,
 )
 
+if os.environ.get("DB_LOCATION") == "RDS":
+    username = os.environ.get("PG_USERNAME")
+    password = os.environ.get("PG_PASSWORD")
+    endpoint = os.environ.get("PG_ENDPOINT")
+    port = os.environ.get("PG_PORT")
+    db_url = f"postgresql://{username}:{password}@{endpoint}:{port}/{username}"
+    echo = False
+    connect_args = {}
+else:
+    db_url = "sqlite:///backend/pony_express.db"
+    echo = True
+    connect_args = {"check_same_thread": False}
+
 engine = create_engine(
-    "sqlite:///backend/pony_express.db",
-    echo=True,
-    connect_args={"check_same_thread": False},
+    db_url,
+    echo=echo,
+    connect_args=connect_args,
 )
 
 def create_db_and_tables():

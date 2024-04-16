@@ -17,6 +17,8 @@ python-jose = "3.3.0"
 bcrypt = "4.1.2"
 cryptography = "42.0.2"
 python-multipart = "^0.0.9"
+mangum = "^0.17.0"
+psycopg2-binary = "^2.9.9"
 
 [build-system]
 requires = ["poetry-core"]

@@ -2,6 +2,7 @@
 import { useQuery } from "react-query";
 import { Link, useParams } from "react-router-dom";
 import NewMessage from "./NewMessage";
+import { useAPI } from "../hooks";
 // import "./Chats.css";
 
 function ChatListItem({ chat }) {
@@ -26,10 +27,11 @@ function ChatList({ chats }) {
 }
 
 function ChatListContainer() {
+    const api = useAPI();
     const { data } = useQuery({
         queryKey: ["chats"],
         queryFn: () => (
-        fetch("http://127.0.0.1:8000/chats")
+        api.get("/chats")
             .then((response) => response.json())
         ),
     });
@@ -48,10 +50,11 @@ function ChatListContainer() {
 }
 
 function ChatCard({ chat }) {
+    const api = useAPI();
     const { data } = useQuery({
         queryKey: ["messages", chat.id],
         queryFn: () => (
-        fetch(`http://127.0.0.1:8000/chats/${chat.id}/messages`)
+        api.get(`/chats/${chat.id}/messages`)
             .then((response) => response.json())
         ),
     });
@@ -83,6 +86,7 @@ function ChatCardContainer({ chat }) {
 }
 
 function ChatCardQueryContainer({ chatId }){
+    const api = useAPI();
     if (!chatId) {
         return (
             <div className="flex flex-col">
@@ -94,7 +98,7 @@ function ChatCardQueryContainer({ chatId }){
     const { data } = useQuery({
         queryKey: ["chats", chatId],
         queryFn: () => (
-            fetch(`http://127.0.0.1:8000/chats/${chatId}`)
+            api.get(`/chats/${chatId}`)
                 .then((response) => response.json())
         ),
     });

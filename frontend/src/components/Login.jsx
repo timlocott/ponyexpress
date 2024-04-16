@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth";
 import FormInput from "./FormInput";
 import Button from "./Button";
+import { useAPIWithoutToken } from "../hooks";
 
 function Error({ message }) {
     if(message === "") {
@@ -40,32 +41,46 @@ function Login() {
     const navigate = useNavigate();
 
     const { login } = useAuth();
+    const api = useAPIWithoutToken();
 
     const disabled = username === "" || password === "";
 
     const onSubmit = (e) => {
         e.preventDefault();
 
-        fetch(
-            "http://127.0.0.1:8000/auth/token",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: new URLSearchParams({ username, password }),
-            },
-        ).then((response) => {
-            if (response.ok){
-                response.json().then(login).then(() => {navigate("/")});
-            } else if (response.status === 401) {
-                response.json().then((data) => {
-                    setError(data.detail.error_description);
-                });
-            } else {
-                setError("error logging in");
-            }
-        });
+        // fetch(
+        //     "http://127.0.0.1:8000/auth/token",
+        //     {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-Type": "application/x-www-form-urlencoded",
+        //         },
+        //         body: new URLSearchParams({ username, password }),
+        //     },
+        // ).then((response) => {
+        //     if (response.ok){
+        //         response.json().then(login).then(() => {navigate("/")});
+        //     } else if (response.status === 401) {
+        //         response.json().then((data) => {
+        //             setError(data.detail.error_description);
+        //         });
+        //     } else {
+        //         setError("error logging in");
+        //     }
+        // });
+
+        api.postForm("/auth/token", { username, password })
+            .then((response) => {
+                if (response.ok){
+                    response.json().then(login).then(() => {navigate("/")});
+                } else if (response.status === 401) {
+                    response.json().then((data) => {
+                        setError(data.detail.error_description);
+                    });
+                } else {
+                    setError("error logging in");
+                }
+            });
     }
 
     return (

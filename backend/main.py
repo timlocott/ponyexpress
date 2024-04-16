@@ -1,5 +1,7 @@
 from contextlib import asynccontextmanager
 
+from mangum import Mangum
+
 from fastapi import FastAPI, Request, Depends
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -32,6 +34,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+lambda_handler = Mangum(app)
 
 @app.exception_handler(EntityNotFoundException)
 def handle_entity_not_found(
