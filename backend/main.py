@@ -35,7 +35,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-lambda_handler = Mangum(app)
 
 @app.exception_handler(EntityNotFoundException)
 def handle_entity_not_found(
@@ -70,4 +69,6 @@ def handle_duplicate_entity(
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", reload=True)
+
+lambda_handler = Mangum(app)
  
