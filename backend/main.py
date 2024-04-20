@@ -32,8 +32,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173", 
         "http://127.0.0.1:5173", 
-        "https://main.d18o48yeyh82x4.amplifyapp.com"
-        "https://fwbtv518ha.execute-api.us-east-2.amazonaws.com/"], # change this as appropriate for your setup
+        "https://main.d18o48yeyh82x4.amplifyapp.com"], # change this as appropriate for your setup
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
