@@ -4,14 +4,14 @@ import { createContext, useContext } from "react";
 import { useQuery  } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./auth";
-import { useApi } from "../hooks";
+import { useAPI } from "../hooks";
 
 const UserContext = createContext();
 
 function UserProvider({ children }) {
     const { isLoggedIn, logout, token } = useAuth();
     const navigate = useNavigate();
-    const api = useApi();
+    const api = useAPI();
 
     const { data } = useQuery({
         queryKey: ["users", token],
